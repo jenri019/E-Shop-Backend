@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-
+// TODO: checar la oferta
 const ProductSchema = Schema({
 	name: {
 		type: String,
