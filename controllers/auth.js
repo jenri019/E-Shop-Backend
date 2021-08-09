@@ -33,6 +33,7 @@ const iniciarSesion = async (req = request, res = response) => {
 		});
 	}
 };
+
 const registrarUsuario = async (req = request, res = response) => {
 	const { email, password } = req.body;
 	console.log(req.body);
@@ -65,4 +66,28 @@ const registrarUsuario = async (req = request, res = response) => {
 	}
 };
 
-module.exports = { iniciarSesion, registrarUsuario };
+const editarUsuario = async (req = request, res = response) => {
+	const { name, lastName, email, password } = req.body;
+
+	try {
+		let usuario = await Usuario.findOne({ email });
+		return res.status(200).json({
+			ok: true,
+			msg: 'ok',
+		});
+	} catch (error) {}
+};
+
+const eliminarUsuario = async (req = request, res = response) => {
+	return res.status(200).json({
+		ok: true,
+		msg: 'ok',
+	});
+};
+
+module.exports = {
+	iniciarSesion,
+	registrarUsuario,
+	editarUsuario,
+	eliminarUsuario,
+};
