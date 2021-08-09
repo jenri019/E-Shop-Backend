@@ -14,4 +14,25 @@ const getProduct = async (req = request, res = response) => {
 	});
 };
 
-module.exports = { getProduct, getProducts };
+const createProduct = async (req = request, res = response) => {
+	res.status(200).json({
+		ok: true,
+		msg: 'Product created',
+	});
+};
+
+const updateProduct = async (req = request, res = response) => {
+	res.status(200).json({
+		ok: true,
+		msg: 'Product updated',
+	});
+};
+
+const deleteProduct = async (req = request, res = response) => {
+	res.status(200).json({
+		ok: true,
+		msg: 'The product has been removed',
+	});
+};
+
+module.exports = {getProducts, getProduct, createProduct, deleteProduct, updateProduct};
