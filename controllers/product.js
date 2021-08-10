@@ -12,7 +12,16 @@ const getProducts = async (req = request, res = response) => {
 
 const getProduct = async (req = request, res = response) => {
 	const pid = req.params.id;
+	
 	try {
+		
+		if (pid.length != 24) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'Not valid ID',
+			});
+		}
+
 		let product = await Product.findById(pid);
 
 		if (!product) {
@@ -70,6 +79,14 @@ const createProduct = async (req = request, res = response) => {
 const updateProduct = async (req = request, res = response) => {
 	const pid = req.params.id;
 	try {
+		
+		if (pid.length != 24) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'Not valid ID',
+			});
+		}
+
 		let product = await Product.findById(pid);
 
 		if(!product){
@@ -100,6 +117,14 @@ const updateProduct = async (req = request, res = response) => {
 const deleteProduct = async (req = request, res = response) => {
 	const pid = req.params.id;
 	try {
+		
+		if (pid.length != 24) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'Not valid ID',
+			});
+		}
+		
 		let product = await Product.findById(pid);
 
 		if(!product){
@@ -125,5 +150,7 @@ const deleteProduct = async (req = request, res = response) => {
 		});
 	}
 };
+
+
 
 module.exports = {getProducts, getProduct, createProduct, deleteProduct, updateProduct};
