@@ -2,9 +2,11 @@ const { request, response } = require('express');
 const Product = require('../models/Product');
 
 const getProducts = async (req = request, res = response) => {
+	let products = await Product.find({}, 'name price stock');
 	res.status(200).json({
 		ok: true,
 		msg: 'Loading all products...',
+		products 
 	});
 };
 
@@ -65,17 +67,63 @@ const createProduct = async (req = request, res = response) => {
 };
 
 const updateProduct = async (req = request, res = response) => {
-	res.status(200).json({
-		ok: true,
-		msg: 'Product updated',
-	});
+	const pid = req.params.id;
+	try {
+		let product = await Product.findById(pid);
+
+		if(!product){
+			return res.status(404).json({
+				ok: false,
+				msg: 'Not found',
+			});
+		}
+
+		const data = req.body;
+
+		product = await Product.findByIdAndUpdate(pid, data);
+
+		res.status(200).json({
+			ok: true,
+			id: pid,
+			data,
+			product
+		});
+
+	} catch (error) {
+		console.log(error);
+		return res.status(200).json({
+			ok: false,
+			msg: 'Algo salio mal contacte con el administrador',
+		});
+	}
 };
 
-const deleteProduct = async (req = request, res = response) => {
-	res.status(200).json({
-		ok: true,
-		msg: 'The product has been removed',
-	});
+const deleteProduct = async (req = request, res = response) => {const pid = req.params.id;
+	try {
+		let product = await Product.findById(pid);
+
+		if(!product){
+			return res.status(404).json({
+				ok: false,
+				msg: 'Not found',
+			});
+		}
+
+		product = await Product.findByIdAndDelete(pid);
+
+		res.status(200).json({
+			ok: true,
+			msg: "Product has been removed",
+			id: pid
+		});
+
+	} catch (error) {
+		console.log(error);
+		return res.status(200).json({
+			ok: false,
+			msg: 'Algo salio mal contacte con el administrador',
+		});
+	}
 };
 
 module.exports = {getProducts, getProduct, createProduct, deleteProduct, updateProduct};
