@@ -1,61 +1,61 @@
 const { request, response } = require('express');
 const bcryptjs = require('bcryptjs');
-const Usuario = require('../models/Usuario');
+const User = require('../models/User');
 
-const iniciarSesion = async (req = request, res = response) => {
+const initSesion = async (req = request, res = response) => {
 	const { email, password } = req.body;
 	try {
-		const usuario = await Usuario.findOne({ email });
-		if (!usuario) {
+		const user = await User.findOne({ email });
+		if (!user) {
 			return res.status(400).json({
 				ok: false,
-				msg: 'cuenta no encontrada',
+				msg: 'Acount not found',
 			});
 		}
 
-		const validPassword = bcryptjs.compareSync(password, usuario.password);
+		const validPassword = bcryptjs.compareSync(password, user.password);
 		if (!validPassword) {
 			return res.status(400).json({
 				ok: false,
-				msg: 'El password no coincide',
+				msg: 'password not match',
 			});
 		}
 
 		return res.status(201).json({
 			ok: true,
-			uid: usuario.id,
-			name: usuario.name + ' ' + usuario.lastName,
+			uid: user.id,
+			name: user.name + ' ' + user.lastName,
 		});
 	} catch (error) {
 		return res.status(500).json({
 			ok: false,
-			msg: 'Algo salio mal contacte con el administrador',
+			msg: 'uppss, contact with admin',
 		});
 	}
 };
 
-const registrarUsuario = async (req = request, res = response) => {
+const registerUser = async (req = request, res = response) => {
 	const { email, password } = req.body;
 	console.log(req.body);
 	try {
-		let usuario = await Usuario.findOne({ email });
-		if (usuario) {
+		let user = await User.findOne({ email });
+		if (user) {
 			return res.status(400).json({
 				ok: false,
-				msg: 'No se pudo crear la cuenta',
+				msg: 'Error: account not created ',
 			});
 		}
-		usuario = new Usuario(req.body);
+		user = new User(req.body);
 
 		const salt = bcryptjs.genSaltSync();
-		usuario.password = bcryptjs.hashSync(password, salt);
+		user.password = bcryptjs.hashSync(password, salt);
 
-		await usuario.save();
+		await user.save();
 
 		return res.status(201).json({
 			ok: true,
-			uid: usuario.id,
-			name: usuario.name + usuario.lastName,
+			uid: user.id,
+			name: user.name +' '+ user.lastName,
 		});
 	} catch (error) {
 		console.log(error);
@@ -66,11 +66,11 @@ const registrarUsuario = async (req = request, res = response) => {
 	}
 };
 
-const editarUsuario = async (req = request, res = response) => {
+const editUser = async (req = request, res = response) => {
 	const { name, lastName, email, password } = req.body;
 
 	try {
-		let usuario = await Usuario.findOne({ email });
+		let usuario = await User.findOne({ email });
 		return res.status(200).json({
 			ok: true,
 			msg: 'ok',
@@ -78,7 +78,7 @@ const editarUsuario = async (req = request, res = response) => {
 	} catch (error) {}
 };
 
-const eliminarUsuario = async (req = request, res = response) => {
+const deleteUser = async (req = request, res = response) => {
 	return res.status(200).json({
 		ok: true,
 		msg: 'ok',
@@ -86,8 +86,8 @@ const eliminarUsuario = async (req = request, res = response) => {
 };
 
 module.exports = {
-	iniciarSesion,
-	registrarUsuario,
-	editarUsuario,
-	eliminarUsuario,
+	initSesion,
+	registerUser,
+	editUser,
+	deleteUser,
 };
