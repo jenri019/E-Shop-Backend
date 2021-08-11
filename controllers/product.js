@@ -11,10 +11,19 @@ const getProducts = async (req = request, res = response) => {
 };
 
 const getProduct = async (req = request, res = response) => {
-	const { name, marca } = req.body;
+	const pid = req.params.id;
+	
 	try {
-		let product = await Product.findOne({name, marca});
-		console.log(product);
+		
+		if (pid.length != 24) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'Not valid ID',
+			});
+		}
+
+		let product = await Product.findById(pid);
+
 		if (!product) {
 			return res.status(400).json({
 				ok: false,
@@ -24,6 +33,7 @@ const getProduct = async (req = request, res = response) => {
 		
 		res.status(200).json({
 			ok: true,
+			msg: "Product founded",
 			name: product.name,
 			marca: product.marca
 		});
@@ -69,6 +79,14 @@ const createProduct = async (req = request, res = response) => {
 const updateProduct = async (req = request, res = response) => {
 	const pid = req.params.id;
 	try {
+		
+		if (pid.length != 24) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'Not valid ID',
+			});
+		}
+
 		let product = await Product.findById(pid);
 
 		if(!product){
@@ -84,9 +102,7 @@ const updateProduct = async (req = request, res = response) => {
 
 		res.status(200).json({
 			ok: true,
-			id: pid,
-			data,
-			product
+			id: pid
 		});
 
 	} catch (error) {
@@ -98,8 +114,17 @@ const updateProduct = async (req = request, res = response) => {
 	}
 };
 
-const deleteProduct = async (req = request, res = response) => {const pid = req.params.id;
+const deleteProduct = async (req = request, res = response) => {
+	const pid = req.params.id;
 	try {
+		
+		if (pid.length != 24) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'Not valid ID',
+			});
+		}
+		
 		let product = await Product.findById(pid);
 
 		if(!product){
@@ -125,5 +150,7 @@ const deleteProduct = async (req = request, res = response) => {const pid = req.
 		});
 	}
 };
+
+
 
 module.exports = {getProducts, getProduct, createProduct, deleteProduct, updateProduct};
