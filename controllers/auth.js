@@ -1,8 +1,9 @@
 const { request, response } = require('express');
 const bcryptjs = require('bcryptjs');
 const User = require('../models/User');
+const { generateJWT } = require('../helpers/jwt');
 
-const initSesion = async (req = request, res = response) => {
+const initSesion = async (req, res) => {
 	const { email, password } = req.body;
 	try {
 		const user = await User.findOne({ email });
@@ -21,10 +22,14 @@ const initSesion = async (req = request, res = response) => {
 			});
 		}
 
+		//Generar nuestro JWT
+		const token = await generateJWT(user._id, user.name);
+
 		return res.status(201).json({
 			ok: true,
 			uid: user.id,
 			name: user.name + ' ' + user.lastName,
+			token,
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -34,9 +39,9 @@ const initSesion = async (req = request, res = response) => {
 	}
 };
 
-const registerUser = async (req = request, res = response) => {
+const registerUser = async (req, res) => {
 	const { email, password } = req.body;
-	console.log(req.body);
+
 	try {
 		let user = await User.findOne({ email });
 		if (user) {
@@ -52,10 +57,14 @@ const registerUser = async (req = request, res = response) => {
 
 		await user.save();
 
+		//Generar nuestro JWT
+		const token = await generateJWT(user._id, user.name);
+
 		return res.status(201).json({
 			ok: true,
 			uid: user.id,
-			name: user.name +' '+ user.lastName,
+			name: user.name + ' ' + user.lastName,
+			token,
 		});
 	} catch (error) {
 		console.log(error);
@@ -66,7 +75,7 @@ const registerUser = async (req = request, res = response) => {
 	}
 };
 
-const editUser = async (req = request, res = response) => {
+const editUser = async (req, res) => {
 	const { name, lastName, email, password } = req.body;
 
 	try {
@@ -78,10 +87,23 @@ const editUser = async (req = request, res = response) => {
 	} catch (error) {}
 };
 
-const deleteUser = async (req = request, res = response) => {
+const deleteUser = async (req, res) => {
 	return res.status(200).json({
 		ok: true,
 		msg: 'ok',
+	});
+};
+
+const renewToken = async (req, res) => {
+	const { uid, name } = req;
+
+	const token = await generateJWT(uid, name);
+
+	res.json({
+		ok: true,
+		token,
+		uid,
+		name,
 	});
 };
 
@@ -90,4 +112,5 @@ module.exports = {
 	registerUser,
 	editUser,
 	deleteUser,
+	renewToken,
 };
