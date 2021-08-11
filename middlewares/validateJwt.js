@@ -11,7 +11,7 @@ const validateJwt = (req, res, next) => {
 		});
 	}
 	try {
-		const { uid, name } = jwt.verify(token, process.env.SECRET_JWT_SEED);
+		const { uid, name } = jwt.verify(token, process.env.SEED);
 		req.uid = uid;
 		req.name = name;
 	} catch (error) {

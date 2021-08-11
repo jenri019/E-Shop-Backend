@@ -67,7 +67,6 @@ const registerUser = async (req, res) => {
 			token,
 		});
 	} catch (error) {
-		console.log(error);
 		return res.status(200).json({
 			ok: false,
 			msg: 'Algo salio mal contacte con el administrador',
@@ -76,15 +75,40 @@ const registerUser = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-	const { name, lastName, email, password } = req.body;
-
+	const { email, password } = req.body;
+	const { uid } = req;
 	try {
-		let usuario = await User.findOne({ email });
+		let user = await User.findOne({ email });
+		if (!user) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'user not found!',
+			});
+		}
+		console.log(uid, user._id);
+		if (uid !== user._id.toString()) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'action not allowed',
+			});
+		}
+		const salt = bcryptjs.genSaltSync();
+		req.body.password = bcryptjs.hashSync(password, salt);
+		const newDataUser = await User.findByIdAndUpdate(uid, req.body, {
+			new: true,
+		});
+
 		return res.status(200).json({
 			ok: true,
-			msg: 'ok',
+			newDataUser,
 		});
-	} catch (error) {}
+	} catch (error) {
+		console.log(error);
+		return res.status(200).json({
+			ok: false,
+			msg: 'Algo salio mal contacte con el administrador',
+		});
+	}
 };
 
 const deleteUser = async (req, res) => {
